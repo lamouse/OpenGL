@@ -28,7 +28,7 @@ foreach(IMAGE_FILE IN LISTS IMAGE_FILES)
     list(APPEND IMAGE_OUT_PATHS ${IMAGE_OUT_PATH})
 endforeach()
 
-add_custom_target(copy_shaders ALL
+add_custom_target(copy_images ALL
     DEPENDS ${IMAGE_OUT_PATHS}
 )
 
