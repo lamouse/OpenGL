@@ -7,7 +7,29 @@
 #include "render/gl/gl_common/shader.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <print>
+
+class Vertex {
+    public:
+        Vertex() {
+            glGenVertexArrays(1, &VAO);
+            glGenBuffers(1, &VBO);
+            glGenBuffers(1, &EBO);
+
+            glBindVertexArray(VAO);
+        }
+
+        void bindVertexArray() const { glBindVertexArray(VAO); }
+        ~Vertex() {
+            glDeleteVertexArrays(1, &VAO);
+            glDeleteBuffers(1, &VBO);
+            glDeleteBuffers(1, &EBO);
+        }
+        unsigned int VAO{};
+        unsigned int VBO{};
+        unsigned EBO{};
+
+    private:
+};
 namespace graphics {
 App::App() : window_(1920, 1080, "OpenGL"), render_base(std::make_unique<render::RenderGL>()) {}
 
@@ -30,17 +52,12 @@ void App::run() {
         1, 2, 3   // second Triangle
     };
 
-    unsigned int VAO{}, VBO{}, EBO{};
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    Vertex vertex;
 
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex.VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertex.EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -77,16 +94,12 @@ void App::run() {
         // 绑定到 binding point
         glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, uboHandle);
 
-
         shader.use();
-        glBindVertexArray(VAO);  // seeing as we only have a single VAO there's no need to bind it
-                                 // every time, but we'll do so to keep things a bit more organized
+        vertex.bindVertexArray();
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         window_.pullEvent();
     }
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
 
 }
 App::~App() = default;

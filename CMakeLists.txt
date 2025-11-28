@@ -38,7 +38,9 @@ endif()
 find_package(glad CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-
+find_package(assimp CONFIG REQUIRED)
+find_package(Stb REQUIRED)
+add_subdirectory(images)
 add_subdirectory(shader)
 
 add_subdirectory(src)
