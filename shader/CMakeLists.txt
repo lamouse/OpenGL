@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 set(SHADER_SOURCE_DIR ${CMAKE_SOURCE_DIR}/shader)
 set(SHADER_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/data/shader)
 file(MAKE_DIRECTORY "${SHADER_OUTPUT_DIR}")
-set(SHADER_EXTENSIONS vert frag comp)
+set(SHADER_EXTENSIONS vert frag comp fs vs)
 set(SHADER_FILES "")
 
 foreach(ext IN LISTS SHADER_EXTENSIONS)
