@@ -4,7 +4,7 @@
 
 #include "app.hpp"
 #include "render/gl/render_gl.hpp"
-#include "render/gl/gl_common/shader_util.hpp"
+#include "render/gl/gl_common/shader.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <print>
@@ -13,23 +13,8 @@ App::App() : window_(1920, 1080, "OpenGL"), render_base(std::make_unique<render:
 
 void App::run() {
     std::array clear_color = {.2f, .3f, .3f, 1.f};
-    auto vertex_shader = render::gl::build_shader("triangle.vert");
-    auto fragment_shader = render::gl::build_shader("triangle.frag");
-    unsigned int shaderProgram = glCreateProgram();
 
-    glAttachShader(shaderProgram, vertex_shader);
-    glAttachShader(shaderProgram, fragment_shader);
-    glLinkProgram(shaderProgram);
-    int success{};
-    char infoLog[512];
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        std::println("link shader error {}", infoLog);
-    }
-
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
+    render::gl::Shader shader("triangle.vert", "triangle.frag");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -66,7 +51,7 @@ void App::run() {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    GLuint blockIndex = glGetUniformBlockIndex(shaderProgram, "InColor");
+    GLuint blockIndex = glGetUniformBlockIndex(shader.ID, "InColor");
 
     glm::vec4 myColor{1.f};
 
@@ -88,12 +73,12 @@ void App::run() {
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
         GLuint bindingPoint = 0;  // 对应 layout(binding = 0)
-        glUniformBlockBinding(shaderProgram, blockIndex, bindingPoint);
+        glUniformBlockBinding(shader.ID, blockIndex, bindingPoint);
         // 绑定到 binding point
         glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, uboHandle);
 
 
-        glUseProgram(shaderProgram);
+        shader.use();
         glBindVertexArray(VAO);  // seeing as we only have a single VAO there's no need to bind it
                                  // every time, but we'll do so to keep things a bit more organized
 
@@ -102,7 +87,7 @@ void App::run() {
     }
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
+
 }
 App::~App() = default;
 
