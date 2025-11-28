@@ -21,22 +21,38 @@ App::App() : window_(1920, 1080, "OpenGL"), render_base(std::make_unique<render:
 void App::run() {
     std::array clear_color = {.2f, .3f, .3f, 1.f};
 
-    float vertices[] = {
-        // positions          // texture coords
-        0.5f,  0.5f,  0.0f, 1.0f, 1.0f,  // top right
-        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  // bottom left
-        -0.5f, 0.5f,  0.0f, 0.0f, 1.0f   // top left
-    };
+    float vertices[] = {-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.5f,  -0.5f, -0.5f, 1.0f, 0.0f,
+                        0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,
+                        -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 
-    unsigned int indices[] = {
-        0, 1, 3,  // first triangle
-        1, 2, 3   // second triangle
-    };
+                        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, 0.5f,  -0.5f, 0.5f,  1.0f, 0.0f,
+                        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+                        -0.5f, 0.5f,  0.5f,  0.0f, 1.0f, -0.5f, -0.5f, 0.5f,  0.0f, 0.0f,
+
+                        -0.5f, 0.5f,  0.5f,  1.0f, 0.0f, -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f,
+                        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+                        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, -0.5f, 0.5f,  0.5f,  1.0f, 0.0f,
+
+                        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,
+                        0.5f,  -0.5f, -0.5f, 0.0f, 1.0f, 0.5f,  -0.5f, -0.5f, 0.0f, 1.0f,
+                        0.5f,  -0.5f, 0.5f,  0.0f, 0.0f, 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+                        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.5f,  -0.5f, -0.5f, 1.0f, 1.0f,
+                        0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, 0.5f,  -0.5f, 0.5f,  1.0f, 0.0f,
+                        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+                        -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,
+                        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+                        -0.5f, 0.5f,  0.5f,  0.0f, 0.0f, -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f};
+    // world space positions of our cubes
+    glm::vec3 cubePositions[] = {glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
+                                 glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
+                                 glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
+                                 glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
+                                 glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
     render::gl::Vertex vertex;
-    vertex.bindVBO(vertices, 3);
-    vertex.bindEBO<unsigned int>(indices);
+    vertex.bindVBO(vertices, 36);
     std::array attribute = {render::VertexAttribute{.location = 0,
                                                     .size = 3,
                                                     .type = GL_FLOAT,
@@ -54,25 +70,46 @@ void App::run() {
     render::gl::Texture texture("base.png");
     render::gl::Texture texture2("base1.jpg");
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    render::gl::Shader shader("5_1.vert", "5_1.frag");
+     glEnable(GL_DEPTH_TEST);
+    render::gl::Shader shader("6_3.vert", "6_3.frag");
     shader.use();  // don't forget to activate/use the shader before setting uniforms!
     // either set it manually like so:
     shader.setInt("texture1", 0);
     // or set it via the texture class
     shader.setInt("texture2", 1);
+
     while (!window_.shouldClose()) {
-        render_base->clear(clear_color);
+        render_base->clear(clear_color, true);
         // bind Texture
         texture.bind();
         texture2.bind(1);
-        // create transformations
-        auto transform =
-            glm::mat4(1.0f);  // make sure to initialize matrix to identity matrix first
-        transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
         shader.use();
-        shader.setMatrix4fv("transform", transform);
-        vertex.draw();
+
+        auto view = glm::mat4(1.0f);  // make sure to initialize matrix to identity matrix first
+        auto projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        // pass transformation matrices to the shader
+        shader.setMatrix4fv(
+            "projection",
+            projection);  // note: currently we set the projection matrix each frame, but
+                          // since the projection matrix rarely changes it's often best
+                          // practice to set it outside the main loop only once.
+        shader.setMatrix4fv("view", view);
+        vertex.bindVertexArray();
+        for (unsigned int i = 0; i < 10; i++) {
+            // calculate the model matrix for each object and pass it to shader before drawing
+            auto model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            shader.setMatrix4fv("model", model);
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            vertex.draw();
+        }
+
         window_.pullEvent();
     }
 }

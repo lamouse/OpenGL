@@ -52,7 +52,6 @@ namespace render::gl {
 
         void draw() const {
             if (index_count > 0) {
-                bindVertexArray();
                 glDrawElements(GL_TRIANGLES, index_count, index_type, byte_offset(0));
             } else {
                 if (vertex_count < 0) {

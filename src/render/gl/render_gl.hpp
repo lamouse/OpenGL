@@ -6,7 +6,7 @@ namespace render {
         public:
         RenderGL();
         ~RenderGL() = default;
-        void clear(std::array<float, 4>& clearColor) override;
+        void clear(std::array<float, 4>& clearColor, bool has_depth = false) override;
     };
 
 }
