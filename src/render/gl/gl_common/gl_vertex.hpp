@@ -18,15 +18,15 @@ namespace render::gl {
         auto operator=(const Vertex &) -> Vertex & = delete;
         auto operator=(Vertex &&) -> Vertex & = delete;
         void bindVertexArray() const { glBindVertexArray(VAO); }
-        void bindVBO(std::span<float> vertex, int vertexCount) {
+        void bindVBO(std::span<float> vertex, int vertexCount, GLenum usage = GL_STATIC_DRAW) {
             vertex_count = vertexCount;
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertex.size() * sizeof(float)),
-                         vertex.data(), GL_STATIC_DRAW);
+                         vertex.data(),usage );
         }
 
         template <typename T>
-        void bindEBO(std::span<T> indices) {
+        void bindEBO(std::span<T> indices, GLenum usage = GL_STATIC_DRAW) {
             if (EBO == 0) {
                 glGenBuffers(1, &EBO);  // 按需创建
             }
@@ -37,7 +37,7 @@ namespace render::gl {
                           "EBO index type must be GLubyte, GLushort, or GLuint");
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(T), indices.data(),
-                         GL_STATIC_DRAW);
+                         usage);
         }
 
         void setVertexAttribute(std::span<VertexAttribute> attributes) const {

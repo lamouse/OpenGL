@@ -3,9 +3,11 @@
 #include <span>
 namespace graphics::resource {
 class Texture {
+    public:
         Texture(std::string_view name);
         [[nodiscard]] auto width() const -> int { return width_; }
         [[nodiscard]] auto height() const -> int { return hight_; }
+        auto data() ->std::span<unsigned char> {return map_data;}
         ~Texture();
 
     private:
