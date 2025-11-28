@@ -1,6 +1,7 @@
 #include "render/gl/gl_common/shader.hpp"
 #include "render/gl/gl_common/shader_util.hpp"
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <print>
 namespace render::gl {
 Shader::Shader(std::string_view vertex, std::string_view fragment) : ID(glCreateProgram()) {
@@ -32,6 +33,10 @@ void Shader::setInt(std::string_view name, int value) const {
 }
 void Shader::setFloat(std::string_view name, float value) const {
     glUniform1f(glGetUniformLocation(ID, name.data()), value);
+}
+
+void Shader::setMatrix4fv(std::string_view name, const glm::mat4& mat)const{
+        glUniformMatrix4fv(glGetUniformLocation(ID, name.data()), 1, GL_FALSE, glm::value_ptr(mat));
 }
 Shader::~Shader() { glDeleteProgram(ID); }
 
