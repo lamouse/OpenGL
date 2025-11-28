@@ -7,7 +7,6 @@
 #include "render/gl/gl_common/shader.hpp"
 #include "render/gl/gl_common/gl_vertex.hpp"
 #include "render/gl/gl_texture.hpp"
-#include "resource/texture.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -54,14 +53,19 @@ void App::run() {
     vertex.setVertexAttribute(attribute);
 
     render::gl::Texture texture("base.png");
-
+    render::gl::Texture texture2("base1.jpg");
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    render::gl::Shader shader("texture_triangle.vert", "texture_triangle.frag");
-
+    render::gl::Shader shader("4_2.vert", "4_2.frag");
+    shader.use(); // don't forget to activate/use the shader before setting uniforms!
+    // either set it manually like so:
+    shader.setInt("texture1", 0);
+    // or set it via the texture class
+    shader.setInt("texture2", 1);
     while (!window_.shouldClose()) {
         render_base->clear(clear_color);
         // bind Texture
         texture.bind();
+        texture2.bind(1);
         shader.use();
         vertex.draw();
         window_.pullEvent();

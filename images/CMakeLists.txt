@@ -24,6 +24,7 @@ foreach(IMAGE_FILE IN LISTS IMAGE_FILES)
     add_custom_command(
         OUTPUT ${IMAGE_OUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${IMAGES_SOURCE_DIR}/${IMAGE_FILE}" "${IMAGE_OUT_PATH}"
+        DEPENDS "${IMAGES_SOURCE_DIR}/${IMAGE_FILE}"
     )
     list(APPEND IMAGE_OUT_PATHS ${IMAGE_OUT_PATH})
 endforeach()

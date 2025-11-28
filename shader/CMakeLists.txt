@@ -24,6 +24,7 @@ foreach(SHADER_FILE IN LISTS SHADER_FILES)
     add_custom_command(
         OUTPUT ${SHADER_OUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SHADER_SOURCE_DIR}/${SHADER_FILE}" "${SHADER_OUT_PATH}"
+        DEPENDS "${SHADER_SOURCE_DIR}/${SHADER_FILE}"
     )
     list(APPEND SHADER_OUT_PATHS ${SHADER_OUT_PATH})
 endforeach()

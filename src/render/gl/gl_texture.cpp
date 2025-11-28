@@ -16,5 +16,10 @@ Texture::Texture(std::string_view name) {
     glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-void Texture::bind() const { glBindTexture(GL_TEXTURE_2D, texture); }
+void Texture::bind(uint8_t binding) const {
+    if(binding){
+        glActiveTexture(GL_TEXTURE0 + binding);
+    }
+    glBindTexture(GL_TEXTURE_2D, texture);
+}
 }  // namespace render::gl
