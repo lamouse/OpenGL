@@ -71,13 +71,13 @@ void App::run() {
     render::gl::Texture texture2("base1.jpg");
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
      glEnable(GL_DEPTH_TEST);
-    render::gl::Shader shader("6_3.vert", "6_3.frag");
+    render::gl::Shader shader("7_4.vert", "7_4.frag");
     shader.use();  // don't forget to activate/use the shader before setting uniforms!
     // either set it manually like so:
     shader.setInt("texture1", 0);
     // or set it via the texture class
     shader.setInt("texture2", 1);
-
+    auto& camera = window_.getCamera();
     while (!window_.shouldClose()) {
         render_base->clear(clear_color, true);
         // bind Texture
@@ -86,17 +86,11 @@ void App::run() {
 
         shader.use();
 
-        auto view = glm::mat4(1.0f);  // make sure to initialize matrix to identity matrix first
-        auto projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 100.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        // pass transformation matrices to the shader
+        auto projection = glm::perspective(glm::radians(camera.Zoom), (float)1920 / (float)1080, 0.1f, 100.0f);
         shader.setMatrix4fv(
             "projection",
-            projection);  // note: currently we set the projection matrix each frame, but
-                          // since the projection matrix rarely changes it's often best
-                          // practice to set it outside the main loop only once.
-        shader.setMatrix4fv("view", view);
+            projection);
+        shader.setMatrix4fv("view", camera.GetViewMatrix());
         vertex.bindVertexArray();
         for (unsigned int i = 0; i < 10; i++) {
             // calculate the model matrix for each object and pass it to shader before drawing
